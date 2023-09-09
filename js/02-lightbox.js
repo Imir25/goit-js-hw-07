@@ -1,41 +1,28 @@
-
 import { galleryItems } from './gallery-items.js';
 
 console.log(galleryItems);
+ 
+const gallery = document.querySelector(".gallery");
 
-function createGalleryItem(item) {
-    const galleryItem = document.createElement('li');
-    galleryItem.classList.add('gallery__item');
-  
-    const galleryLink = document.createElement('a');
-    galleryLink.classList.add('gallery__link');
-    galleryLink.href = item.original;
-  
-    const galleryImage = document.createElement('img');
-    galleryImage.classList.add('gallery__image');
-    galleryImage.src = item.preview;
-    galleryImage.alt = item.description;
-    galleryImage.setAttribute('data-source', item.original);
-  
-    galleryLink.appendChild(galleryImage);
-    galleryItem.appendChild(galleryLink);
-  
-    return galleryItem;
-}
+const galleryMarkup = galleryItems
+  .map(
+    (item) => `
+   <li class="gallery__item">
+   <a class="gallery__link" href="${item.original}">
+      <img  
+      class="gallery__image"
+      src="${item.preview}"
+      alt="${item.description}" 
+      />
+   </a>
+   </li>`
+  )
+  .join('');
 
-function renderGallery() {
-    const galleryContainer = document.querySelector('.gallery');
-  
-    const galleryElements = galleryItems.map(item => createGalleryItem(item));
-  
-    galleryContainer.append(...galleryElements);
-}
+gallery.innerHTML = galleryMarkup;
 
-renderGallery();
-
-const lightbox = new SimpleLightbox('.gallery a', {
-    captions: true,
-    captionType: 'attr',
+var lightbox = new SimpleLightbox('.gallery a', {
+    captionsData: 'alt',
     captionPosition: 'bottom',
     captionDelay: 250
 });

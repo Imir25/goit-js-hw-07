@@ -3,55 +3,41 @@ import { galleryItems } from './gallery-items.js';
 
 console.log(galleryItems);
 
-
-function createGalleryItem(item) {
-    const galleryItem = document.createElement('li');
-    galleryItem.classList.add('gallery__item');
+function createGalleryMarkup(items) {
+    return items
+      .map(
+        ({ preview, original, description }) => `
+        <li class="gallery__item">
+          <a class="gallery__link" href="${original}">
+            <img
+              class="gallery__image"
+              src="${preview}"
+              data-source="${original}"
+              alt="${description}"
+            />
+          </a>
+        </li>
+      `
+      )
+      .join('');
+  }
+  const galleryContainer = document.querySelector('#galleryContainer');
+  const galleryMarkup = createGalleryMarkup(galleryItems);
   
-    const galleryLink = document.createElement('a');
-    galleryLink.classList.add('gallery__link');
-    galleryLink.href = item.original;
+  galleryContainer.innerHTML = galleryMarkup;
   
-    const galleryImage = document.createElement('img');
-    galleryImage.classList.add('gallery__image');
-    galleryImage.src = item.preview;
-    galleryImage.alt = item.description;
-    galleryImage.setAttribute('data-source', item.original);
+  const galleryImages = galleryContainer.querySelectorAll('.gallery__image');
   
-    galleryLink.appendChild(galleryImage);
-    galleryItem.appendChild(galleryLink);
+  galleryImages.forEach((image) => {
+    image.addEventListener('click', (event) => {
+      event.preventDefault();
   
-    return galleryItem;
-}
-
-function renderGallery() {
-    const galleryContainer = document.querySelector('.gallery');
+      const largeImageUrl = event.target.dataset.source;
   
-    const galleryElements = galleryItems.map(item => createGalleryItem(item));
+      const instance = basicLightbox.create(`
+        <img src="${largeImageUrl}">
+      `);
   
-    galleryContainer.append(...galleryElements);
-}
-
-renderGallery();
-
-const galleryContainer = document.querySelector('.gallery');
-  
-galleryContainer.addEventListener('click', onGalleryContainerClick);
-
-function onGalleryContainerClick(event) {
-    event.preventDefault();
-    const target = event.target;
-  
-    if (target.classList.contains('gallery__image')) {
-        const largeImageUrl = target.dataset.source;
-    
-        console.log('Large Image URL:', largeImageUrl);
-        
-    
-        const instance = basicLightbox.create(`
-            <img src="${largeImageUrl}">
-        `);
-        
-        instance.show();
-    }
-}
+      instance.show();
+    });
+  });
